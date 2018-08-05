@@ -3,7 +3,7 @@
 #include <windows.h> 
 #include <time.h>
 #include <conio.h>
-SMALL_RECT use_rc = { 2, 1, 48, 29 };static bool hitTop;
+SMALL_RECT use_rc = { 2, 1, 48, 29 }; static bool hitTop;
 #define consolescreenx 50
 #define consolescreeny 30      
 HANDLE handle;
@@ -85,11 +85,11 @@ void RandBlock(bool BlockSet[4][4])
 void BackGround(HANDLE handle)
 {
 	for (int y1 = 0; y1 < 30; y1++)
-		FillConsoleOutputAttribute(handle, NULL, 50, { 0, y1 }, &a);
+		FillConsoleOutputAttribute(handle, NULL, 50, { (SHORT)0, (SHORT)y1 }, &a);
 	for (int y = 0; y < consolescreeny; y++)
 	{
-		FillConsoleOutputAttribute(handle, BACKGROUND_GREEN | BACKGROUND_INTENSITY, 2, { 0, y }, &a);
-		FillConsoleOutputAttribute(handle, BACKGROUND_GREEN | BACKGROUND_INTENSITY, 2, { (consolescreenx - 2), y }, &a);
+		FillConsoleOutputAttribute(handle, BACKGROUND_GREEN | BACKGROUND_INTENSITY, 2, { (SHORT)0, (SHORT)y }, &a);
+		FillConsoleOutputAttribute(handle, BACKGROUND_GREEN | BACKGROUND_INTENSITY, 2, { (SHORT)(consolescreenx - 2), (SHORT)y }, &a);
 	}
 	FillConsoleOutputAttribute(handle, BACKGROUND_GREEN | BACKGROUND_INTENSITY, consolescreenx, { 0, 0 }, &a);
 	FillConsoleOutputAttribute(handle, BACKGROUND_GREEN | BACKGROUND_INTENSITY, consolescreenx, { 0, consolescreeny }, &a);
@@ -120,47 +120,47 @@ void FillBlock(bool BlockSet[4][4], COORD XY, int i)
 	}
 	int x = 0, y = 0;
 	for (int x1 = 0; x1 < 4; x1++)
-	for (int y1 = 0; y1 < 4; y1++)
-	if (BlockSet[x1][y1])
-	{
-		FillConsoleOutputAttribute(handle, back, 2, { XY.X + 2 * x1 + 1, XY.Y + y1 }, &a);
-	}
+		for (int y1 = 0; y1 < 4; y1++)
+			if (BlockSet[x1][y1])
+			{
+				FillConsoleOutputAttribute(handle, back, 2, { (SHORT)(XY.X + 2 * x1 + 1), (SHORT)(XY.Y + y1) }, &a);
+			}
 }
 void CleanBlock(bool BlockSet[4][4], COORD XY)
 {
 	int x = 0, y = 0;
 	for (int x1 = 0; x1 < 4; x1++)
-	for (int y1 = 0; y1 < 4; y1++)
-	if (BlockSet[x1][y1])
-	{
-		FillConsoleOutputAttribute(handle, NULL, 2, { XY.X + 2 * x1 + 1, XY.Y + y1 }, &a);
-	}
+		for (int y1 = 0; y1 < 4; y1++)
+			if (BlockSet[x1][y1])
+			{
+				FillConsoleOutputAttribute(handle, NULL, 2, { (SHORT)(XY.X + 2 * x1 + 1), (SHORT)(XY.Y + y1) }, &a);
+			}
 }
 bool isHitDown(bool BlockSet[4][4], COORD XY)
 {
 	WORD Attribute1 = NULL;
 	for (int x = 0; x < 4; x++)
-	for (int y = 0; y < 3; y++)
-	{
-		if (BlockSet[x][y])
-		if (!BlockSet[x][y + 1])
+		for (int y = 0; y < 3; y++)
 		{
-			if (ReadConsoleOutputAttribute(handle, &Attribute1, 1, { XY.X + 2 * x + 1, XY.Y + y + 1 }, &a))
-			if (Attribute1)
-			{
-				if (XY.Y + y + 1 < 5)
+			if (BlockSet[x][y])
+				if (!BlockSet[x][y + 1])
 				{
-					hitTop = true;
+					if (ReadConsoleOutputAttribute(handle, &Attribute1, 1, { (SHORT)(XY.X + 2 * x + 1),(SHORT)(XY.Y + y + 1) }, &a))
+						if (Attribute1)
+						{
+							if (XY.Y + y + 1 < 5)
+							{
+								hitTop = true;
+							}
+							return true;
+						}
 				}
-				return true;
-			}
 		}
-	}
 	for (int x = 0; x < 4; x++)
 	{
 		if (BlockSet[x][3])
 		{
-			ReadConsoleOutputAttribute(handle, &Attribute1, 1, { XY.X + 2 * x + 1, XY.Y + 4 }, &a);
+			ReadConsoleOutputAttribute(handle, &Attribute1, 1, { (SHORT)(XY.X + 2 * x + 1), (SHORT)(XY.Y + 4) }, &a);
 			if (Attribute1)
 			{
 				if (XY.Y  < 4)
@@ -177,21 +177,21 @@ bool isHitLeft(bool BlockSet[4][4], COORD XY)
 {
 	WORD Attribute1 = NULL;
 	for (int x = 0; x < 3; x++)
-	for (int y = 0; y < 4; y++)
-	{
-		if (BlockSet[x][y])
-		if (!BlockSet[x-1][y])
+		for (int y = 0; y < 4; y++)
 		{
-			if (ReadConsoleOutputAttribute(handle, &Attribute1, 1, { XY.X + 2 * x - 1, XY.Y + y }, &a))
-			if (Attribute1)
-				return true;
+			if (BlockSet[x][y])
+				if (!BlockSet[x - 1][y])
+				{
+					if (ReadConsoleOutputAttribute(handle, &Attribute1, 1, { (SHORT)(XY.X + 2 * x - 1), (SHORT)(XY.Y + y) }, &a))
+						if (Attribute1)
+							return true;
+				}
 		}
-	}
 	for (int y = 0; y < 4; y++)
 	{
 		if (BlockSet[0][y])
 		{
-			ReadConsoleOutputAttribute(handle, &Attribute1, 1, { XY.X - 1, XY.Y + y }, &a);
+			ReadConsoleOutputAttribute(handle, &Attribute1, 1, { (SHORT)(XY.X - 1), (SHORT)(XY.Y + y) }, &a);
 			if (Attribute1)
 				return true;
 		}
@@ -202,21 +202,21 @@ bool isHitRight(bool BlockSet[4][4], COORD XY)
 {
 	WORD Attribute1 = NULL;
 	for (int x = 0; x < 3; x++)
-	for (int y = 0; y < 4; y++)
-	{
-		if (BlockSet[x][y])
-		if (!BlockSet[x+1][y])
+		for (int y = 0; y < 4; y++)
 		{
-			if (ReadConsoleOutputAttribute(handle, &Attribute1, 1, { XY.X + 2 * x + 3, XY.Y + y }, &a))
-			if (Attribute1)
-				return true;
+			if (BlockSet[x][y])
+				if (!BlockSet[x + 1][y])
+				{
+					if (ReadConsoleOutputAttribute(handle, &Attribute1, 1, { (SHORT)(XY.X + 2 * x + 3), (SHORT)(XY.Y + y) }, &a))
+						if (Attribute1)
+							return true;
+				}
 		}
-	}
 	for (int y = 0; y < 4; y++)
 	{
 		if (BlockSet[3][y])
 		{
-			ReadConsoleOutputAttribute(handle, &Attribute1, 1, { XY.X + 9, XY.Y + y }, &a);
+			ReadConsoleOutputAttribute(handle, &Attribute1, 1, { (SHORT)(XY.X + 9), (SHORT)(XY.Y + y) }, &a);
 			if (Attribute1)
 				return true;
 		}
@@ -225,17 +225,17 @@ bool isHitRight(bool BlockSet[4][4], COORD XY)
 }
 bool isNearBlock(bool BlockSet[4][4], COORD XY)
 {
-	WORD Attribute1=NULL;
-	for (int x = 0; x < 4;x++)
-	for (int y = 0; y < 4; y++)
-	{
-		if (!BlockSet[x][y])
+	WORD Attribute1 = NULL;
+	for (int x = 0; x < 4; x++)
+		for (int y = 0; y < 4; y++)
 		{
-			ReadConsoleOutputAttribute(handle, &Attribute1, 1, { XY.X + 2 * x + 1, XY.Y + y }, &a);
-			if (Attribute1) 
-				return true;
+			if (!BlockSet[x][y])
+			{
+				ReadConsoleOutputAttribute(handle, &Attribute1, 1, { (SHORT)(XY.X + 2 * x + 1), (SHORT)(XY.Y + y) }, &a);
+				if (Attribute1)
+					return true;
+			}
 		}
-	}
 	return false;
 }
 bool DeleteFullLine()
@@ -256,19 +256,19 @@ bool DeleteFullLine()
 	if (fullline)
 	{
 		for (; xy.Y>1; xy.Y--)
-		for (int x = 2; x < 50; x += 2)
-		{
-			ReadConsoleOutputAttribute(handle, &Attribute, 1, { x, xy.Y - 1 }, &a);
-			FillConsoleOutputAttribute(handle, Attribute, 2, { x, xy.Y }, &a);
-		}
+			for (int x = 2; x < 50; x += 2)
+			{
+				ReadConsoleOutputAttribute(handle, &Attribute, 1, { (SHORT)x, (SHORT)(xy.Y - 1) }, &a);
+				FillConsoleOutputAttribute(handle, Attribute, 2, { (SHORT)x, (SHORT)xy.Y }, &a);
+			}
 		return true;
 	}
 	return false;
 }
 void paintScoreFace(int score)
 {
-	
-	char sText[20] ;
+
+	char sText[20];
 	sprintf(sText, "%d", score);
 	DWORD dwNum = MultiByteToWideChar(CP_ACP, 0, sText, -1, NULL, 0);
 	wchar_t *pwText;
@@ -278,30 +278,30 @@ void paintScoreFace(int score)
 		delete[]pwText;
 	}
 	MultiByteToWideChar(CP_ACP, 0, sText, -1, pwText, dwNum);
-	FillConsoleOutputAttribute(handle, FOREGROUND_RED | FOREGROUND_INTENSITY|FOREGROUND_BLUE, 20, { 4, 2 }, &a);
-	WriteConsoleOutputCharacter(handle, L"µÃ·ÖÎª:", 4, { 4, 2 }, &a);
-	WriteConsoleOutputCharacter(handle, pwText, dwNum-1, { 12, 2 }, &a);
+	FillConsoleOutputAttribute(handle, FOREGROUND_RED | FOREGROUND_INTENSITY | FOREGROUND_BLUE, 20, { 4, 2 }, &a);
+	WriteConsoleOutputCharacter(handle, L"å¾—åˆ†ä¸º:", 4, { 4, 2 }, &a);
+	WriteConsoleOutputCharacter(handle, pwText, dwNum - 1, { 12, 2 }, &a);
 }
 void endBackground()
 {
 	for (int y = 10; y < 20; y++)
-		FillConsoleOutputAttribute(handle, BACKGROUND_BLUE|BACKGROUND_INTENSITY, 20, { consolescreeny/2, y }, &a);
-	FillConsoleOutputAttribute(handle, BACKGROUND_BLUE | BACKGROUND_INTENSITY| FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY, 14, { consolescreenx / 2 - 7, 15 }, &a);
-	WriteConsoleOutputCharacter(handle, L"you are loser!", 14, { consolescreenx/2 - 7, 15 }, &a);
+		FillConsoleOutputAttribute(handle, BACKGROUND_BLUE | BACKGROUND_INTENSITY, 20, { (SHORT)(consolescreeny / 2), (SHORT)y }, &a);
+	FillConsoleOutputAttribute(handle, BACKGROUND_BLUE | BACKGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY, 14, { consolescreenx / 2 - 7, 15 }, &a);
+	WriteConsoleOutputCharacter(handle, L"you are loser!", 14, { consolescreenx / 2 - 7, 15 }, &a);
 }
 void beginBackground()
 {
-	for (int y = 15; y < 20;y++)
-	FillConsoleOutputAttribute(handle,  FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY, 14, { consolescreenx / 2 - 7, y }, &a);
-	WriteConsoleOutputCharacter(handle, L"ËÙ¶ÈÎª£º1", 5, { consolescreenx / 2 - 7, 15 }, &a);
-	WriteConsoleOutputCharacter(handle, L"2", 1, { consolescreenx / 2 +1, 16 }, &a);
-	WriteConsoleOutputCharacter(handle, L"3", 1, { consolescreenx / 2 +1, 17 }, &a);
+	for (int y = 15; y < 20; y++)
+		FillConsoleOutputAttribute(handle, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY, 14, { (SHORT)(consolescreenx / 2 - 7), (SHORT)y }, &a);
+	WriteConsoleOutputCharacter(handle, L"é€Ÿåº¦ä¸ºï¼š1", 5, { consolescreenx / 2 - 7, 15 }, &a);
+	WriteConsoleOutputCharacter(handle, L"2", 1, { consolescreenx / 2 + 1, 16 }, &a);
+	WriteConsoleOutputCharacter(handle, L"3", 1, { consolescreenx / 2 + 1, 17 }, &a);
 	WriteConsoleOutputCharacter(handle, L"4", 1, { consolescreenx / 2 + 1, 18 }, &a);
 	WriteConsoleOutputCharacter(handle, L"5", 1, { consolescreenx / 2 + 1, 19 }, &a);
 }
 int main()
 {
-	COORD xy; DWORD time_beg; int sroce = 0,times=0; char speed;
+	COORD xy; DWORD time_beg; int sroce = 0, times = 0; char speed;
 	unsigned DELAY;
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTitle(L"CopyLeft && made by ndsry");
@@ -332,11 +332,11 @@ int main()
 		char direct;
 		srand(clock());
 		int i = rand();
-		RandBlock(BlockSet);	
+		RandBlock(BlockSet);
 		for (int y = 1; y < 30; y++, xy.Y++)
 		{
 			FillBlock(BlockSet, xy, i);
-			
+
 			time_beg = clock();
 			int hit = 0;
 			do
@@ -351,7 +351,7 @@ int main()
 					{
 					case 75: if (!isHitLeft(BlockSet, xy)) xy.X -= 2;  FillBlock(BlockSet, xy, i); break;
 					case 77: if (!isHitRight(BlockSet, xy)) xy.X += 2; FillBlock(BlockSet, xy, i); break;
-					case 72: if (!isNearBlock(BlockSet,xy)) TurnBlock(BlockSet); FillBlock(BlockSet, xy, i); break;//´æÔÚ²»ÍêÉÆµÄµØ·½£¬ÒÔ²»ÄÜ±ä»»µÄ·½Ê½´ø¹ý
+					case 72: if (!isNearBlock(BlockSet, xy)) TurnBlock(BlockSet); FillBlock(BlockSet, xy, i); break;//å­˜åœ¨ä¸å®Œå–„çš„åœ°æ–¹ï¼Œä»¥ä¸èƒ½å˜æ¢çš„æ–¹å¼å¸¦è¿‡
 					case 80: if (!isHitDown(BlockSet, xy)) xy.Y++; FillBlock(BlockSet, xy, i); break;
 					}
 				}
@@ -367,12 +367,12 @@ int main()
 		/*********************************/
 		times = 0;
 		while (DeleteFullLine())
-		{ 
-			times++; 
+		{
+			times++;
 		}
 		/*******************************************************************************/
-		sroce += times*times;
-		paintScoreFace(sroce*100);
+		sroce += times * times;
+		paintScoreFace(sroce * 100);
 	}
 	BackGround(handle);
 	endBackground();
